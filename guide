@@ -50,3 +50,8 @@ docker push yarikk/kubsched-trblnc:latest
 New sched.yaml
 kubectl create -f sched.yaml
 
+<kubectl get pods -o wide
+NAME   READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+pod1   1/1     Running   0          65m   10.244.0.3   minikube       <none>           <none>
+pod2   1/1     Running   0          65m   10.244.1.5   minikube-m02   <none>           <none>
+pod3   1/1     Running   0          65m   10.244.0.4   minikube       <none>           <none>
