@@ -1,7 +1,7 @@
 git init
 git diff
 git add guide
-EDITOR=E git commit -m 'the pods kicked off!'
+EDITOR=E git commit -m 'cleanup'
 
 # on a windows machine:
 winget install Kubernetes.minikube
@@ -32,10 +32,40 @@ docker images
 docker push yarikk/kubsched-trblnc:latest
 
 New sched.yaml
-kubectl create -f sched.yaml
+kubectl apply -f sched.yaml
 
 <kubectl get pods -o wide
 NAME   READY   STATUS    RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
-pod1   1/1     Running   0          65m   10.244.0.3   minikube       <none>           <none>
-pod2   1/1     Running   0          65m   10.244.1.5   minikube-m02   <none>           <none>
-pod3   1/1     Running   0          65m   10.244.0.4   minikube       <none>           <none>
+pod1   1/1     Running   0          77s   10.244.0.5   minikube       <none>           <none>
+pod2   1/1     Running   0          77s   10.244.1.7   minikube-m02   <none>           <none>
+pod3   1/1     Running   0          77s   10.244.0.6   minikube       <none>           <none>
+
+kubectl get all -n kube-system
+kubectl describe pod -n kube-system custom-scheduler-9c69fd46f-9f4tk
+kubectl get events -n kube-system
+
+<kubectl logs -n kube-system custom-scheduler-9c69fd46f-9f4tk
+2026-04-30 18:52:27,612 INFO Assigning pod pod1 with memory request 629145600.0:
+2026-04-30 18:52:27,612 INFO Optimal node for pod pod1: minikube
+2026-04-30 18:52:27,682 INFO Assigning pod pod2 with memory request 838860800.0:
+2026-04-30 18:52:27,683 INFO Optimal node for pod pod2: minikube-m02
+2026-04-30 18:52:27,789 INFO Assigning pod pod3 with memory request 629145600.0:
+2026-04-30 18:52:27,789 INFO Optimal node for pod pod3: minikube
+2026-04-30 18:52:27,945 INFO Assigning pod pod1 with memory request 629145600.0:
+2026-04-30 18:52:27,950 INFO Optimal node for pod pod1: minikube-m02
+2026-04-30 18:52:27,957 INFO Operation cannot be fulfilled on pods/binding "pod1": pod pod1 is already assigned to node "minikube"
+2026-04-30 18:52:28,092 INFO Assigning pod pod1 with memory request 629145600.0:
+2026-04-30 18:52:28,092 INFO Optimal node for pod pod1: minikube-m02
+2026-04-30 18:52:28,099 INFO Operation cannot be fulfilled on pods/binding "pod1": pod pod1 is already assigned to node "minikube"
+2026-04-30 18:52:28,155 INFO Assigning pod pod2 with memory request 838860800.0:
+2026-04-30 18:52:28,155 INFO Optimal node for pod pod2: minikube-m02
+2026-04-30 18:52:28,163 INFO Operation cannot be fulfilled on pods/binding "pod2": pod pod2 is already assigned to node "minikube-m02"
+2026-04-30 18:52:28,231 INFO Assigning pod pod2 with memory request 838860800.0:
+2026-04-30 18:52:28,231 INFO Optimal node for pod pod2: minikube-m02
+2026-04-30 18:52:28,238 INFO Operation cannot be fulfilled on pods/binding "pod2": pod pod2 is already assigned to node "minikube-m02"
+2026-04-30 18:52:28,328 INFO Assigning pod pod3 with memory request 629145600.0:
+2026-04-30 18:52:28,328 INFO Optimal node for pod pod3: minikube-m02
+2026-04-30 18:52:28,335 INFO Operation cannot be fulfilled on pods/binding "pod3": pod pod3 is already assigned to node "minikube"
+2026-04-30 18:52:28,436 INFO Assigning pod pod3 with memory request 629145600.0:
+2026-04-30 18:52:28,436 INFO Optimal node for pod pod3: minikube-m02
+2026-04-30 18:52:28,450 INFO Operation cannot be fulfilled on pods/binding "pod3": pod pod3 is already assigned to node "minikube"
