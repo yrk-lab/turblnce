@@ -26,3 +26,13 @@ minikube status
 minikube dashboard
 minikube addons enable metrics-server
 minikube delete
+
+cp /Users/yarek/Downloads/DIRIGENT/^(pod1.yaml pod2.yaml pod3.yaml scheduler.py)	./
+
+# first, let's see how what happens with the default scheduler
+kubectl apply -f pod1.yaml -f pod2.yaml -f pod3.yaml
+kubectl get pods -o wide
+kubectl describe pod pod1
+kubectl logs pod1
+# kubectl delete pod pod1 pod2 pod3
+
