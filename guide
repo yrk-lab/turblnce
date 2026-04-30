@@ -1,6 +1,7 @@
 git init
+git diff
 git add guide
-EDITOR=E git commit
+EDITOR=E git commit -m 'progress update'
 
 # on local mac:
 brew install minikube
@@ -16,3 +17,8 @@ win sudo install minikube-darwin-amd64 /usr/local/bin/minikube
 # on a windows machine:
 winget install Kubernetes.minikube
 
+# virtualbox seems to be okay-ish, but only with older 6.2, not the current 7.1
+minikube start --nodes 2 --memory 1800m --driver=virtualbox --alsologtostderr -v=4
+minikube status
+minikube dashboard
+minikube delete
