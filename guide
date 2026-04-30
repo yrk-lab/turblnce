@@ -18,7 +18,11 @@ win sudo install minikube-darwin-amd64 /usr/local/bin/minikube
 winget install Kubernetes.minikube
 
 # virtualbox seems to be okay-ish, but only with older 6.2, not the current 7.1
-minikube start --nodes 2 --memory 1800m --driver=virtualbox --alsologtostderr -v=4
+# I only have 4GiB of RAM on my MacBook Air, the defaults crash the OS.
+# Supplying -m at the minimums make the boot hang.
+# I'm switching to the windows machine over RDP.
+minikube start --nodes 2 --memory 2000m --driver=virtualbox --alsologtostderr # -v=4
 minikube status
 minikube dashboard
+minikube addons enable metrics-server
 minikube delete
