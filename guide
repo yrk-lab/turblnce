@@ -1,7 +1,7 @@
 git init
 git diff
 git add guide
-EDITOR=E git commit -m 'progress update'
+EDITOR=E git commit -m 'docker image'
 
 # on local mac:
 brew install minikube
@@ -46,3 +46,7 @@ New Dockerfile
 docker build -t yarikk/kubsched-trblnc:latest .
 docker images
 docker push yarikk/kubsched-trblnc:latest
+
+New sched.yaml
+kubectl create -f sched.yaml
+
