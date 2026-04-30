@@ -1,7 +1,7 @@
 git init
 git diff
 git add guide
-EDITOR=E git commit -m 'docker image'
+EDITOR=E git commit -m 'tweak scheduler image'
 
 # on local mac:
 brew install minikube
