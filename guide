@@ -1,46 +1,30 @@
 git init
 git diff
 git add guide
-EDITOR=E git commit -m 'tweak scheduler image'
-
-# on local mac:
-brew install minikube
-win sudo port selfupdate
-win sudo port intstall minikube
-
-# the above takes a while, so
-curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube-darwin-amd64
-win sudo install minikube-darwin-amd64 /usr/local/bin/minikube
-# then grab https://github.com/containers/podman/releases
-# ... no luck, I have too old OS/hardware, and podman or docker don't start. Trying virtualbox
+EDITOR=E git commit -m 'the pods kicked off!'
 
 # on a windows machine:
 winget install Kubernetes.minikube
+winget install kubectl
 
-# virtualbox seems to be okay-ish, but only with older 6.2, not the current 7.1
-# I only have 4GiB of RAM on my MacBook Air, the defaults crash the OS.
-# Supplying -m at the minimums make the boot hang.
-# I'm switching to the windows machine over RDP.
-minikube start --nodes 2 --memory 2000m --driver=virtualbox --alsologtostderr # -v=4
+# to create an image with the custom scheduler we need docker:
+winget install XP8CBJ40XLBWKX # Docker Desktop from the Store
+
+minikube delete
+minikube start --nodes 2 --driver docker
 minikube status
 minikube dashboard
 minikube addons enable metrics-server
-minikube delete
+# minikube delete
 
 cp /Users/yarek/Downloads/DIRIGENT/^(pod1.yaml pod2.yaml pod3.yaml scheduler.py)	./
 
 # first, let's see how what happens with the default scheduler
 kubectl apply -f pod1.yaml -f pod2.yaml -f pod3.yaml
-kubectl get pods -o wide
+kubectl get pods -o wide		# showing as 'Pending'
 kubectl describe pod pod1
 kubectl logs pod1
 # kubectl delete pod pod1 pod2 pod3
-
-# create an image with the custom scheduler 
-# installing docker desktop...
-winget install XP8CBJ40XLBWKX # Docker Desktop from the Store
-minikube delete
-minikube start --nodes 2 --driver docker
 
 New Dockerfile
 docker build -t yarikk/kubsched-trblnc:latest .
