@@ -36,3 +36,10 @@ kubectl describe pod pod1
 kubectl logs pod1
 # kubectl delete pod pod1 pod2 pod3
 
+# create an image with the custom scheduler 
+# installing docker desktop...
+winget install XP8CBJ40XLBWKX # Docker Desktop from the Store
+minikube delete
+minikube start --nodes 2 --driver docker
+
+New Dockerfile
