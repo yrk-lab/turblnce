@@ -43,7 +43,7 @@ func main() {
 		}
 
 		if L*B > Ts {
-			fmt.Println("!	spine over capacity:", "L*B", L*B, ">", "Ts", Ts)
+			fmt.Println("!	spine over capacity:", "L", L, "B", B, "L*B", L*B, ">", "Ts", Ts)
 			continue
 		}
 
@@ -57,4 +57,9 @@ func main() {
 			}
 		}
 	}
+
+	fmt.Println("Chosen topology:")
+	fmt.Println("	Hosts: ", H)
+	fmt.Println("	Leaves (L):", best.L)
+	fmt.Println("	Spines (S):", best.S)
 }
