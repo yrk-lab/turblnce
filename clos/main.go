@@ -37,7 +37,7 @@ func main() {
 	var debug *log.Logger
 	if *verbose {
 		debug = log.Default()
-		log.Default().SetFlags(0)	// less clutter
+		log.Default().SetFlags(0) // less clutter
 	} else {
 		debug = log.New(io.Discard, "", 0)
 	}
@@ -92,4 +92,16 @@ func main() {
 	fmt.Println("	Links per leaf-spine pair (K):", best.K)
 	fmt.Println("	Hosts per leaf (hpl):", H/best.L)
 	fmt.Println("	Links per host (lph):", Th/B)
+
+	bestHpl := H / best.L
+	hostLinks := Th / B
+	hostPortsPerLeaf := bestHpl * hostLinks
+	uplinkPortsPerLeaf := best.S * best.K
+	portsPerSpine := best.L * best.K
+
+	fmt.Println("Port utilisation:")
+	fmt.Printf("	Leaf: host-facing ports = %d, uplink ports = %d, total throughput = %d Gbps\n",
+		hostPortsPerLeaf, uplinkPortsPerLeaf, bestHpl*Th)
+	fmt.Printf("	Spine: ports per spine = %d, total throughput per spine = %d Gbps\n",
+		portsPerSpine, portsPerSpine*B)
 }
