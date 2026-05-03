@@ -62,4 +62,5 @@ func main() {
 	fmt.Println("	Hosts: ", H)
 	fmt.Println("	Leaves (L):", best.L)
 	fmt.Println("	Spines (S):", best.S)
+	fmt.Println("	Hosts per leaf (hpl):", H / best.L)
 }
