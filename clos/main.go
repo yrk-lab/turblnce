@@ -26,6 +26,7 @@ func main() {
 	var best struct {
 		L     int // number of leaf switches
 		S     int // number of spine switches
+		K     int // number of links per leaf↔spine pair
 		found bool
 	}
 	_ = best // BUG
@@ -42,18 +43,26 @@ func main() {
 			continue
 		}
 
-		if L*B > Ts {
-			fmt.Println("!	spine over capacity:", "L", L, "B", B, "L*B", L*B, ">", "Ts", Ts)
-			continue
-		}
-
 		for S := 1; S <= Ts/B; S++ {
 			fmt.Println("*	with:", "S", S)
+
+			K := hpl*Th / (S*B)	// leaf↔spine links
+			if K < 1 {
+				fmt.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "S", S, "B", B, "hpl*Th", hpl*Th, "S*B", S*B, "K=hpl*Th / (S*B)", K)
+				continue
+			}
+
+			if L*B*K > Ts {
+				fmt.Println("!	spine over capacity:", "L", L, "B", B, "K", K, "L*B*K", L*B*K, ">", "Ts", Ts)
+				continue
+			}
+
+			fmt.Println("*		", "K", K)
 
 			if !best.found || L+S < best.L+best.S {
 				fmt.Println("*		new best:", "L", L, "+", "S", S, "L+S", L+S, "<", best.L+best.S)
 				best.found = true
-				best.L, best.S = L, S
+				best.L, best.S, best.K = L, S, K
 			}
 		}
 	}
@@ -62,5 +71,6 @@ func main() {
 	fmt.Println("	Hosts: ", H)
 	fmt.Println("	Leaves (L):", best.L)
 	fmt.Println("	Spines (S):", best.S)
+	fmt.Println("	Links per leaf-spine pair (K):", best.K)
 	fmt.Println("	Hosts per leaf (hpl):", H / best.L)
 }
