@@ -3,3 +3,7 @@ go mod init github.com/yrk-lab/turblnce/clos
 go build
 git show
 go run main.go -out topology-example.json -v > clos-example.out 2>&1
+
+jq -r '"graph G { rankdir=LR;",
+  (.[] | "  " + (.src|tostring) + " -- " + (.dst|tostring) + " [label=\"" + (.speed_gbps|tostring) + " Gbps\"];" ),
+  "}"' topology.json
