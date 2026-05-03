@@ -121,25 +121,21 @@ func main() {
 	spineStart := H + best.L
 
 	// host↔leaf aggregated links
-	for l := 0; l < best.L; l++ {
-		leafID := leafStart + l
-		off := l * bestHpl
-		e := off + bestHpl
-		for h := off; h < e; h++ {
-			debug.Println("* h↔l:", "host", h, "leaf", leafID, "speed", hostLinks * B)
-			links = append(links, Link{
-				Src:   h,
-				Dst:   leafID,
-				Speed: hostLinks * B,
-			})
-		}
+	for h := 0; h < H; h++ {
+		leafID := leafStart + h/bestHpl
+		debug.Println("* h↔l:", "host", h, "leaf", leafID, "speed", hostLinks*B, "n", hostLinks)
+		links = append(links, Link{
+			Src:   h,
+			Dst:   leafID,
+			Speed: hostLinks * B,
+		})
 	}
 
 	// leaf↔spine aggregated links
 	for l := 0; l < best.L; l++ {
 		leafID := leafStart + l
 		for s := 0; s < best.S; s++ {
-			debug.Println("* l↔s:", "leaf", leafID, "spine", spineStart + s, "speed", best.K * B)
+			debug.Println("* l↔s:", "leaf", leafID, "spine", spineStart+s, "speed", best.K*B, "n", best.K)
 			links = append(links, Link{
 				Src:   leafID,
 				Dst:   spineStart + s,
