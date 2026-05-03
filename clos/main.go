@@ -22,4 +22,20 @@ func main() {
 	_ = outputFile // BUG
 
 	fmt.Println("* Input parameters:", "H", H, "Ts", Ts, "Th", Th, "B", B)
+
+	var best struct {
+		L     int // number of leaf switches
+		S     int // number of spine switches
+		found bool
+	}
+	_ = best // BUG
+
+	// search for minimal number of switches (L + S)
+	for L := 1; L <= H; L++ {
+		fmt.Println("* Trying:", "L", L)
+
+		for S := 1; S <= Ts/B; S++ {
+			fmt.Println("*	with:", "S", S)
+		}
+	}
 }
