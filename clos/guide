@@ -2,3 +2,4 @@ Watch go run main.go
 go mod init github.com/yrk-lab/turblnce/clos
 go build
 git show
+go run main.go -out topology-example.json -v > clos-example.out 2>&1
