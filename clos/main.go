@@ -34,8 +34,14 @@ func main() {
 	for L := 1; L <= H; L++ {
 		fmt.Println("* Trying:", "L", L)
 
+		if L * B > Ts {
+			fmt.Println("*	spine over capacity:", "L*B", L*B, ">", "Ts", Ts)
+			continue
+		}
+
 		for S := 1; S <= Ts/B; S++ {
 			fmt.Println("*	with:", "S", S)
+
 		}
 	}
 }
