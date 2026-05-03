@@ -7,6 +7,13 @@ import (
 	"log"
 )
 
+// Link structure describes a single link in the topology output
+type Link struct {
+	Src   int `json:"src"`
+	Dst   int `json:"dst"`
+	Speed int `json:"speed_gbps"`
+}
+
 func main() {
 	var (
 		switchTputGbps    = flag.Int("switch-tput", 6400, "Total switching throughput per switch (Gbps)")
@@ -104,4 +111,40 @@ func main() {
 		hostPortsPerLeaf, uplinkPortsPerLeaf, bestHpl*Th)
 	fmt.Printf("	Spine: ports per spine = %d, total throughput per spine = %d Gbps\n",
 		portsPerSpine, portsPerSpine*B)
+
+	//
+	// Render the links
+	//
+	var links []Link
+
+	leafStart := H
+	spineStart := H + best.L
+
+	// host↔leaf aggregated links
+	for l := 0; l < best.L; l++ {
+		leafID := leafStart + l
+		off := l * bestHpl
+		e := off + bestHpl
+		for h := off; h < e; h++ {
+			debug.Println("* h↔l:", "host", h, "leaf", leafID, "speed", hostLinks * B)
+			links = append(links, Link{
+				Src:   h,
+				Dst:   leafID,
+				Speed: hostLinks * B,
+			})
+		}
+	}
+
+	// leaf↔spine aggregated links
+	for l := 0; l < best.L; l++ {
+		leafID := leafStart + l
+		for s := 0; s < best.S; s++ {
+			debug.Println("* l↔s:", "leaf", leafID, "spine", spineStart + s, "speed", best.K * B)
+			links = append(links, Link{
+				Src:   leafID,
+				Dst:   spineStart + s,
+				Speed: best.K * B,
+			})
+		}
+	}
 }
