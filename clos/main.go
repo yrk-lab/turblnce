@@ -23,7 +23,15 @@ func main() {
 	B := *linkBandwidthGbps
 	_ = outputFile // BUG
 
-	fmt.Println("Input parameters:", "H", H, "Ts", Ts, "Th", Th, "B", B)
+	fmt.Println("Input parameters:")
+	fmt.Println("	Hosts: ", H)
+	fmt.Println("		-hosts", H)
+	fmt.Println("	Switch throughput, Gbps (Ts):", Ts)
+	fmt.Println("		-switch-tput", Ts)
+	fmt.Println("	Host throughput, Gbps (Th):", Th)
+	fmt.Println("		-host-escape", Th)
+	fmt.Println("	Link bandwidth, Gbps (B):", B)
+	fmt.Println("		-link-bw", B)
 
 	var best struct {
 		L     int // number of leaf switches
