@@ -31,7 +31,6 @@ func main() {
 	Ts := *switchTputGbps
 	Th := *hostEscapeGbps
 	B := *linkBandwidthGbps
-	_ = outputFile // BUG
 
 	fmt.Println("Input parameters:")
 	fmt.Println("	Hosts: ", H)
@@ -42,6 +41,8 @@ func main() {
 	fmt.Println("		-host-escape", Th)
 	fmt.Println("	Link bandwidth, Gbps (B):", B)
 	fmt.Println("		-link-bw", B)
+	fmt.Println("	Output JSON file:", *outputFile)
+	fmt.Println("		-out", *outputFile)
 
 	var debug *log.Logger
 	if *verbose {
