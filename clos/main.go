@@ -63,6 +63,10 @@ func main() {
 	for l := 1; l <= H; l++ {
 		hpl := H / l
 		debug.Println("* Trying:", "l", l, "hpl", hpl)
+		if H%l != 0 {
+			debug.Println("!	uneven host distribution:", "H%l", H, "%", l, "=", H%l)
+			continue
+		}
 		if hpl*Th > Ts {
 			debug.Println("!	leaf over capacity:", "hpl", hpl, "Th", Th, "hpl*Th", hpl*Th, ">", "Ts", Ts)
 			continue
@@ -106,19 +110,20 @@ func main() {
 
 	leaf0 := H
 	spine0 := H + L
+	debug.Println("* leaf0", leaf0, "spine0", spine0)
 
 	// host↔leaf, aggregated
 	for h := 0; h < H; h++ {
 		l := h / hpl
 		debug.Println("* h↔l:", "host", h, "leaf", leaf0+l, "speed", hl*B, "n", hl)
-		links = append(links, Link{Src: h, Dst: leaf0+l, Speed: hl * B})
+		links = append(links, Link{Src: h, Dst: leaf0 + l, Speed: hl * B})
 	}
 
 	// leaf↔spine, aggregated
 	for l := 0; l < L; l++ {
 		for s := 0; s < S; s++ {
 			debug.Println("* l↔s:", "leaf", leaf0+l, "spine", spine0+s, "speed", K*B, "n", K)
-			links = append(links, Link{Src: leaf0+l, Dst: spine0+s, Speed: K * B})
+			links = append(links, Link{Src: leaf0 + l, Dst: spine0 + s, Speed: K * B})
 		}
 	}
 
