@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
+	"os"
 )
 
 // Link structure describes a single link in the topology output
@@ -36,7 +38,7 @@ func main() {
 	fmt.Println("		-hosts", H)
 	fmt.Println("	Switch throughput, Gbps (Ts):", Ts)
 	fmt.Println("		-switch-tput", Ts)
-	fmt.Println("	Host throughput, Gbps (Th):", Th)
+	fmt.Println("	Host escape throughput, Gbps (Th):", Th)
 	fmt.Println("		-host-escape", Th)
 	fmt.Println("	Link bandwidth, Gbps (B):", B)
 	fmt.Println("		-link-bw", B)
@@ -143,4 +145,21 @@ func main() {
 			})
 		}
 	}
+
+	//
+	// Write JSON
+	//
+	f, err := os.Create(*outputFile)
+	if err != nil {
+		log.Fatalf("failed to create output file: %v", err)
+	}
+	defer f.Close()
+
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ") // readability - remove to produce a smaller file (would read with jq)
+	if err := enc.Encode(links); err != nil {
+		log.Fatalf("failed to write JSON: %v", err)
+	}
+
+	fmt.Printf("\nWrote %d aggregated links to %s\n", len(links), *outputFile)
 }
