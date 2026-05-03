@@ -1,3 +1,4 @@
-go run main.go
+Watch go run main.go
 go mod init github.com/yrk-lab/turblnce/clos
 go build
+git show
