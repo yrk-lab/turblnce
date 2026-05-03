@@ -53,12 +53,11 @@ func main() {
 		debug = log.New(io.Discard, "", 0)
 	}
 
+	// L - number of leaf switches
+	// S - number of spine switches
+	// K - number of links per leaf↔spine pair
+	var L, S, K int
 	var found bool
-	var best struct {
-		L     int // number of leaf switches
-		S     int // number of spine switches
-		K     int // number of links per leaf↔spine pair
-	}
 
 	// search for minimal number of switches (l + s)
 	for l := 1; l <= H; l++ {
@@ -69,7 +68,7 @@ func main() {
 			continue
 		}
 		for s := 1; s <= Ts/B; s++ {
-			k := hpl*Th / (s * B) // leaf↔spine links
+			k := hpl * Th / (s * B) // leaf↔spine links
 			debug.Println("*	with s", s, "k", k)
 			if k < 1 {
 				debug.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "s", s, "B", B, "hpl*Th", hpl*Th, "s*B", s*B, "k", k)
@@ -81,45 +80,45 @@ func main() {
 				continue
 			}
 
-			if !found || l+s < best.L+best.S {
-				debug.Println("*		new best:", "l", l, "+", "s", s, "l+s", l+s, "<", best.L+best.S)
+			if !found || l+s < L+S {
+				debug.Println("*		new best:", "l", l, "+", "s", s, "l+s", l+s, "<", L+S)
 				found = true
-				best.L, best.S, best.K = l, s, k
+				L, S, K = l, s, k
 			}
 		}
 	}
 	if !found {
 		log.Fatalf("no 2-layer Clos found with given parameters")
 	}
-	hpl := H / best.L
+	hpl := H / L
 
 	fmt.Println("Chosen topology:")
 	fmt.Println("	Hosts: ", H)
-	fmt.Println("	Leaves (L):", best.L, "Spines (S):", best.S)
+	fmt.Println("	Leaves (L):", L, "Spines (S):", S)
 	fmt.Println("	Hosts/leaf (hpl):", hpl)
-	fmt.Println("	Links/host (lph):", Th/B)
-	fmt.Printf("	Leaf ports: hosts = %d, uplink = %d (%d Gbps)\n", hpl * hl, best.S * best.K, hpl*Th)
-	fmt.Printf("	Spine ports: %d (%d Gbps)\n", best.L * best.K, best.L * best.K * B)
+	fmt.Println("	Links/host (hl):", hl)
+	fmt.Printf("	Leaf ports: hosts = %d, uplink = %d (%d Gbps)\n", hl*hpl, S*K, hpl*Th)
+	fmt.Printf("	Spine ports: %d (%d Gbps)\n", L*K, L*K*B)
 
 	// Render the links
 	//
 	var links []Link
 
 	leaf0 := H
-	spine0 := H + best.L
+	spine0 := H + L
 
-	// host↔leaf aggregated links
+	// host↔leaf, aggregated
 	for h := 0; h < H; h++ {
-		l := h/hpl
+		l := h / hpl
 		debug.Println("* h↔l:", "host", h, "leaf", leaf0+l, "speed", hl*B, "n", hl)
 		links = append(links, Link{Src: h, Dst: leaf0+l, Speed: hl * B})
 	}
 
-	// leaf↔spine aggregated links
-	for l := 0; l < best.L; l++ {
-		for s := 0; s < best.S; s++ {
-			debug.Println("* l↔s:", "leaf", leaf0+l, "spine", spine0+s, "speed", best.K*B, "n", best.K)
-			links = append(links, Link{Src: leaf0+l, Dst: spine0+s, Speed: best.K * B})
+	// leaf↔spine, aggregated
+	for l := 0; l < L; l++ {
+		for s := 0; s < S; s++ {
+			debug.Println("* l↔s:", "leaf", leaf0+l, "spine", spine0+s, "speed", K*B, "n", K)
+			links = append(links, Link{Src: leaf0+l, Dst: spine0+s, Speed: K * B})
 		}
 	}
 

@@ -7248,7 +7248,7 @@ Chosen topology:
 	Hosts:  128
 	Leaves (L): 15 Spines (S): 11
 	Hosts/leaf (hpl): 8
-	Links/host (lph): 4
+	Links/host (hl): 4
 	Leaf ports: hosts = 32, uplink = 22 (6400 Gbps)
 	Spine ports: 30 (6000 Gbps)
 * h↔l: host 0 leaf 128 speed 800 n 4
