@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 )
 
 func main() {
@@ -12,6 +13,7 @@ func main() {
 		linkBandwidthGbps = flag.Int("link-bw", 200, "Per-link bandwidth (Gbps)")
 		numHosts          = flag.Int("hosts", 128, "Total number of hosts")
 		outputFile        = flag.String("out", "topology.json", "Output JSON file")
+		verbose           = flag.Bool("v", false, "Verbose mode (very)")
 	)
 	flag.Parse()
 
@@ -21,7 +23,7 @@ func main() {
 	B := *linkBandwidthGbps
 	_ = outputFile // BUG
 
-	fmt.Println("* Input parameters:", "H", H, "Ts", Ts, "Th", Th, "B", B)
+	fmt.Println("Input parameters:", "H", H, "Ts", Ts, "Th", Th, "B", B)
 
 	var best struct {
 		L     int // number of leaf switches
@@ -29,48 +31,65 @@ func main() {
 		K     int // number of links per leaf↔spine pair
 		found bool
 	}
-	_ = best // BUG
 
 	// search for minimal number of switches (L + S)
 	for L := 1; L <= H; L++ {
-		fmt.Println("* Trying:", "L", L)
+		if *verbose {
+			fmt.Println("* Trying:", "L", L)
+		}
 
 		hpl := H / L // hosts per leaf
-		fmt.Println("*	", "hpl", hpl)
+		if *verbose {
+			fmt.Println("*	", "hpl", hpl)
+		}
 
 		if hpl*Th > Ts {
-			fmt.Println("!	leaf over capacity:", "hpl", hpl, "Th", Th, "hpl*Th", hpl*Th, ">", "Ts", Ts)
+			if *verbose {
+				fmt.Println("!	leaf over capacity:", "hpl", hpl, "Th", Th, "hpl*Th", hpl*Th, ">", "Ts", Ts)
+			}
 			continue
 		}
 
 		for S := 1; S <= Ts/B; S++ {
-			fmt.Println("*	with:", "S", S)
-
-			K := hpl*Th / (S*B)	// leaf↔spine links
+			if *verbose {
+				fmt.Println("*	with:", "S", S)
+			}
+			K := hpl * Th / (S * B) // leaf↔spine links
 			if K < 1 {
-				fmt.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "S", S, "B", B, "hpl*Th", hpl*Th, "S*B", S*B, "K=hpl*Th / (S*B)", K)
+				if *verbose {
+					fmt.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "S", S, "B", B, "hpl*Th", hpl*Th, "S*B", S*B, "K=hpl*Th / (S*B)", K)
+				}
 				continue
 			}
 
 			if L*B*K > Ts {
-				fmt.Println("!	spine over capacity:", "L", L, "B", B, "K", K, "L*B*K", L*B*K, ">", "Ts", Ts)
+				if *verbose {
+					fmt.Println("!	spine over capacity:", "L", L, "B", B, "K", K, "L*B*K", L*B*K, ">", "Ts", Ts)
+				}
 				continue
 			}
 
-			fmt.Println("*		", "K", K)
+			if *verbose {
+				fmt.Println("*		", "K", K)
+			}
 
 			if !best.found || L+S < best.L+best.S {
-				fmt.Println("*		new best:", "L", L, "+", "S", S, "L+S", L+S, "<", best.L+best.S)
+				if *verbose {
+					fmt.Println("*		new best:", "L", L, "+", "S", S, "L+S", L+S, "<", best.L+best.S)
+				}
 				best.found = true
 				best.L, best.S, best.K = L, S, K
 			}
 		}
 	}
-
+	if !best.found {
+		log.Fatalf("no 2-layer Clos found with given parameters")
+	}
 	fmt.Println("Chosen topology:")
 	fmt.Println("	Hosts: ", H)
 	fmt.Println("	Leaves (L):", best.L)
 	fmt.Println("	Spines (S):", best.S)
 	fmt.Println("	Links per leaf-spine pair (K):", best.K)
-	fmt.Println("	Hosts per leaf (hpl):", H / best.L)
+	fmt.Println("	Hosts per leaf (hpl):", H/best.L)
+	fmt.Println("	Links per host (lph):", Th / B)
 }
