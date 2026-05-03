@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 )
 
@@ -33,6 +34,14 @@ func main() {
 	fmt.Println("	Link bandwidth, Gbps (B):", B)
 	fmt.Println("		-link-bw", B)
 
+	var debug *log.Logger
+	if *verbose {
+		debug = log.Default()
+		log.Default().SetFlags(0)	// less clutter
+	} else {
+		debug = log.New(io.Discard, "", 0)
+	}
+
 	var best struct {
 		L     int // number of leaf switches
 		S     int // number of spine switches
@@ -42,49 +51,32 @@ func main() {
 
 	// search for minimal number of switches (L + S)
 	for L := 1; L <= H; L++ {
-		if *verbose {
-			fmt.Println("* Trying:", "L", L)
-		}
+		debug.Println("* Trying:", "L", L)
 
 		hpl := H / L // hosts per leaf
-		if *verbose {
-			fmt.Println("*	", "hpl", hpl)
-		}
+		debug.Println("*	hpl", hpl)
 
 		if hpl*Th > Ts {
-			if *verbose {
-				fmt.Println("!	leaf over capacity:", "hpl", hpl, "Th", Th, "hpl*Th", hpl*Th, ">", "Ts", Ts)
-			}
+			debug.Println("!	leaf over capacity:", "hpl", hpl, "Th", Th, "hpl*Th", hpl*Th, ">", "Ts", Ts)
 			continue
 		}
 
 		for S := 1; S <= Ts/B; S++ {
-			if *verbose {
-				fmt.Println("*	with:", "S", S)
-			}
+			debug.Println("*	with S", S)
 			K := hpl * Th / (S * B) // leaf↔spine links
 			if K < 1 {
-				if *verbose {
-					fmt.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "S", S, "B", B, "hpl*Th", hpl*Th, "S*B", S*B, "K=hpl*Th / (S*B)", K)
-				}
+				debug.Println("!	no leaf↔spine links:", "hpl", hpl, "Th", Th, "S", S, "B", B, "hpl*Th", hpl*Th, "S*B", S*B, "K=hpl*Th / (S*B)", K)
 				continue
 			}
+			debug.Println("*		", "K", K)
 
 			if L*B*K > Ts {
-				if *verbose {
-					fmt.Println("!	spine over capacity:", "L", L, "B", B, "K", K, "L*B*K", L*B*K, ">", "Ts", Ts)
-				}
+				debug.Println("!	spine over capacity:", "L", L, "B", B, "K", K, "L*B*K", L*B*K, ">", "Ts", Ts)
 				continue
-			}
-
-			if *verbose {
-				fmt.Println("*		", "K", K)
 			}
 
 			if !best.found || L+S < best.L+best.S {
-				if *verbose {
-					fmt.Println("*		new best:", "L", L, "+", "S", S, "L+S", L+S, "<", best.L+best.S)
-				}
+				debug.Println("*		new best:", "L", L, "+", "S", S, "L+S", L+S, "<", best.L+best.S)
 				best.found = true
 				best.L, best.S, best.K = L, S, K
 			}
@@ -99,5 +91,5 @@ func main() {
 	fmt.Println("	Spines (S):", best.S)
 	fmt.Println("	Links per leaf-spine pair (K):", best.K)
 	fmt.Println("	Hosts per leaf (hpl):", H/best.L)
-	fmt.Println("	Links per host (lph):", Th / B)
+	fmt.Println("	Links per host (lph):", Th/B)
 }
